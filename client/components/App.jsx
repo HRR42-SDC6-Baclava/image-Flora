@@ -46,11 +46,9 @@ const Button = styled.button`
   position: absolute;
   z-index: 2;
   border: none;
-
   &:hover {
     background-color: #101820;
   }
-
   &:focus {
     outline: 0;
   }

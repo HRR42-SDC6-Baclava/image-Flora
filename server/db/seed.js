@@ -1,33 +1,47 @@
-const mongoose = require('mongoose');
-const db = require('./index.js');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const faker = require('faker');
-const Restaurants = require('./restaurant.js');
 
-const populate = () => {
-  const data = [];
+const csvWriter = createCsvWriter({
+  path:'images.csv',
+  header: [
+    {id:'id', title:'id'},
+    {id:'name', title: 'names'},
+    {id: 'imageUrls', title:'images'}
+  ]
+});
 
-  for (let i = 1; i <= 100; i++) {
-    const name = faker.random.words();
-    const restaurant = {
+const records = [];
+const seed = () => {
+  for (let i = 0; i <= 100000; i++) {
+    const name = faker.company.companyName();
+    const imagePage = {
       id: i,
-      name,
-      imageUrls: [],
+      name: name,
+      imageUrls: []
     };
 
-    const numberPhotos = Math.floor(Math.random() * 12 + 9);
+    //const numberPhotos = Math.floor(Math.random() * 200 + 5);
 
-    for (let j = numberPhotos; j > 0; j--) {
+    for (let j = 100; j > 0; j--) {
       const num = Math.floor((Math.random() * 822 + 1));
       const url = `https://hrr42-fec5.s3-us-west-1.amazonaws.com/photo${num}.jpg`;
-      restaurant.imageUrls.push(url);
-    }
-    data.push(restaurant);
-  }
+      imagePage.imageUrls.push(url);
+    };
+  records.push(imagePage);
 
-  Restaurants.insertMany(data)
-    .then(() => console.log('Database populated'))
-    .catch(err => console.log(err))
-    .finally(() => mongoose.connection.close());
+}
+  console.log(records);
 };
 
-populate();
+seed();
+
+csvWriter
+  .writeRecords(records)
+  .then(() => {
+    console.log('csv file is set up successfully');
+  })
+  .catch((err) => {
+    console.log(err)
+  });
+
+
