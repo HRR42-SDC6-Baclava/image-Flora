@@ -1,52 +1,23 @@
-const mongoose = require('mongoose');
-const Restaurants = require('./restaurant.js');
-mongoose.set('useCreateIndex', true);
+const cassandra = require('cassandra-driver');
 
-const db = mongoose.connection;
+var client = new cassandra.Client({
+  contactPoints:['127.0.0.1'],
+  localDataCenter: 'datacenter1',
+  keyspace: 'zagat'
+});
 
-mongoose.connect('mongodb://127.0.0.1/zagat', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => console.log('Database connected'))
-  .catch(err => console.log(err));
+client.connect((err) => {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Cassandra database connected');
+  }
+});
 
+client.execute(`CREATE TABLE images (
+  id int PRIMARY KEY,
+  names text,
+  imageURLs text
+);`);
 
-const get = (id) => {
-  return new Promise((resolve, reject) => {
-    Restaurants.find({ id })
-      .exec((err, docs) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(docs);
-      });
-  });
-};
-
-const insert = (data) => {
-  const entry = new Restaurants(data);
-  return entry.save();
-};
-
-const updateData = (id, data) => {
-  return new Promise((resolve, reject) => {
-      Restaurants.update({id}, data)
-        .exec((err, data) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(data);
-        });
-    });
-  };
-
-const del = (id) => {
-  Restaurants.find({id})
-  .remove()
-  .exec();
-}
-
-module.exports = { db, get, insert, updateData, del };
-
-//'mongodb://mongo:27017/zagat' ||
+module.exports = client;

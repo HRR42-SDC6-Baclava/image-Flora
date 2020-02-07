@@ -24,5 +24,5 @@ coverage
 build/
 dist/
 
-.pem
+zagat_image.pem
 .env

@@ -222,7 +222,10 @@ class App extends Component {
 
     axios.get(`/api/images/${restaurantID}`)
       .then(res => {
-        const { id, imageUrls, name } = res.data[0];
+        const id  = res.data.id;
+        const imageUrls = res.data.images.split(',');
+        const name = res.data.names;
+
         this.setState({
           id,
           name,
